@@ -1,58 +1,274 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 💧 GotaAGota
 
-## About Laravel
+**Sistema de Gestión Comunitaria de Agua**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
+[![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)](https://mysql.com)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Descripción
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+GotaAGota es un sistema de gestión comunitaria de agua que permite administrar **socios, propiedades, familias, medidores, consumos, pagos y alertas** relacionadas con la distribución del recurso hídrico.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Desarrollado para comunidades rurales y periurbanas que gestionan su propio sistema de agua potable.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Stack Tecnológico
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+| Capa | Tecnología |
+|------|-----------|
+| Backend | PHP 8.4 + Laravel 13 |
+| Frontend | React 19 + Vite 8 + Tailwind CSS 4 |
+| Base de Datos | MySQL (producción) / SQLite (desarrollo) |
+| ORM | Eloquent |
+| Routing Frontend | React Router DOM 7 |
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
+## Arquitectura
+
+```
+Cliente (React + Vite)
+        │
+        ▼ HTTP /api/v1
+   Controllers
+  (app/Http/Controllers/Api)
+        │
+        ▼
+     Services
+  (app/Services)
+        │
+        ▼
+  Repositories
+  (app/Repositories)
+        │
+        ▼
+     Models
+  (app/Models - Eloquent)
+        │
+        ▼
+      MySQL
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## Estructura del Proyecto
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+gotaAgota/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/Api/     # 10 controladores REST
+│   │   ├── Requests/            # 19 Form Requests (validación)
+│   │   └── Resources/           # 10 API Resources (DTOs)
+│   ├── Services/                # 13 servicios (CRUD + Motores)
+│   ├── Repositories/
+│   │   ├── Contracts/           # 11 interfaces
+│   │   └── *.php                # 10 implementaciones Eloquent
+│   ├── Models/                  # 10 modelos
+│   └── Providers/
+│       └── RepositoryServiceProvider.php
+│
+├── database/
+│   ├── migrations/              # 10 migraciones ordenadas
+│   ├── factories/               # 6 factories con datos faker
+│   └── seeders/                 # SocioSeeder + PropiedadSeeder
+│
+├── routes/
+│   └── api.php                  # 53 rutas bajo /api/v1
+│
+└── frontend/                    # App React
+    ├── src/
+    │   ├── services/api.js      # Cliente fetch centralizado
+    │   ├── pages/
+    │   │   ├── FamilyManagement/
+    │   │   └── FamilyDetail/
+    │   ├── components/
+    │   │   └── Sidebar.jsx
+    │   └── layouts/
+    │       └── RootLayout.jsx
+    └── vite.config.js
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Módulos del Sistema
 
-## Security Vulnerabilities
+| Módulo | Descripción |
+|--------|-------------|
+| **Socios** | Propietarios / responsables principales |
+| **Teléfonos** | Múltiples teléfonos por socio |
+| **Propiedades** | Lotes, viviendas e inmuebles |
+| **Familias** | Grupos familiares por propiedad |
+| **Medidores** | Control de consumo por propiedad |
+| **Consumos** | Lecturas periódicas de medidores |
+| **Pagos** | Cobros y estados de pago |
+| **Cuotas de Agua** | Litros asignados por familia/mes |
+| **Alertas** | PRECAUCIÓN / RESTRICCIÓN / RACIONAMIENTO |
+| **Tanque Comunitario** | Disponibilidad global del recurso |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Servicios de Negocio
 
-## License
+- **MotorConsumoService** — calcula consumo real (`Lectura Actual - Lectura Anterior`)
+- **MotorRacionamientoService** — evalúa estado del sistema según nivel del tanque
+- **MotorNotificacionesService** — genera alertas automáticas
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## API REST
+
+Base URL: `/api/v1`
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/socios` | Listar socios |
+| POST | `/socios` | Crear socio |
+| GET | `/socios/{id}` | Ver socio |
+| PUT | `/socios/{id}` | Actualizar socio |
+| DELETE | `/socios/{id}` | Eliminar socio |
+| GET | `/socios/{id}/telefonos` | Teléfonos del socio |
+| GET | `/socios/{id}/pagos/pendientes` | Pagos pendientes |
+| GET | `/familias` | Listar familias (con socio, cuota, medidor) |
+| GET | `/familias/{id}` | Detalle con consumos recientes |
+| GET | `/medidores/{id}/consumos` | Historial de lecturas |
+| GET | `/tanque/resumen` | Estado del sistema de racionamiento |
+| GET | `/alertas/activas` | Alertas activas |
+| ... | `/propiedades` `/medidores` `/consumos` `/pagos` `/cuotas` `/alertas` `/tanque` | CRUD completo |
+
+---
+
+## Instalación y Configuración
+
+### Requisitos
+
+- PHP 8.2+
+- Composer 2+
+- Node.js 18+ (con npm o pnpm)
+- MySQL 8 (o SQLite para desarrollo)
+
+### Backend (Laravel)
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/manuel-lazarte/gotaAgota.git
+cd gotaAgota
+
+# 2. Instalar dependencias PHP
+composer install
+
+# 3. Configurar entorno
+cp .env.example .env
+php artisan key:generate
+
+# 4. Configurar base de datos en .env
+# Para MySQL:
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=gotaagota
+DB_USERNAME=root
+DB_PASSWORD=tu_password
+
+# Para SQLite (desarrollo rápido):
+DB_CONNECTION=sqlite
+DB_DATABASE=/ruta/absoluta/al/proyecto/database/database.sqlite
+
+# 5. Crear base de datos y correr migraciones con datos de prueba
+php artisan migrate:fresh --seed
+
+# 6. Iniciar servidor de desarrollo
+php artisan serve
+# API disponible en: http://localhost:8000/api/v1
+```
+
+### Frontend (React + Vite)
+
+```bash
+# Desde la raíz del proyecto
+cd frontend
+
+# Instalar dependencias
+npm install
+# o si tienes pnpm:
+pnpm install
+
+# Iniciar servidor de desarrollo
+npm run dev
+# App disponible en: http://localhost:5173
+
+# Build de producción
+npm run build
+```
+
+> El frontend ya tiene configurado un proxy en `vite.config.js` que redirige `/api` → `http://localhost:8000`, por lo que no necesitas configurar CORS durante el desarrollo.
+
+---
+
+## Datos de Prueba (Seeders)
+
+El seeder genera automáticamente:
+
+| Entidad | Cantidad |
+|---------|----------|
+| Socios | 25 (20 activos + 5 inactivos) |
+| Teléfonos | ~35 |
+| Propiedades | ~35 |
+| Familias | ~35 |
+| Medidores | ~35 |
+| Consumos | ~210 (6 meses de historial) |
+| Cuotas de Agua | ~105 (3 meses por familia) |
+| Tanque Comunitario | 2 registros (nivel 65%) |
+| Alertas | 2 (1 activa PRECAUCIÓN) |
+
+```bash
+# Resetear y volver a poblar la base de datos
+php artisan migrate:fresh --seed
+```
+
+---
+
+## Variables de Entorno Importantes
+
+```env
+APP_NAME=GotaAGota
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=sqlite
+DB_DATABASE=/ruta/absoluta/database/database.sqlite
+```
+
+---
+
+## Flujo de Negocio
+
+```
+Socio → Propiedad → Familia → Cuota de Agua
+                           ↓
+                        Medidor → Consumo → Motor de Racionamiento → Alertas
+```
+
+---
+
+## Equipo
+
+| Rol | Responsabilidad |
+|-----|----------------|
+| Backend | API REST Laravel — Controllers, Services, Repositories |
+| Frontend | UI React — Family Management, Family Detail |
+
+---
+
+## Licencia
+
+MIT
