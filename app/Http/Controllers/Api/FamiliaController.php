@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Familia\StoreFamiliaRequest;
 use App\Http\Requests\Familia\UpdateFamiliaRequest;
 use App\Http\Resources\FamiliaResource;
+use App\Http\Resources\ConsumoResource;
+use App\Models\Familia;
 use App\Services\FamiliaService;
 use Illuminate\Http\JsonResponse;
 
@@ -15,7 +17,13 @@ class FamiliaController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json(FamiliaResource::collection($this->service->getAll()));
+        $familias = Familia::with([
+            'propiedad.socio.telefonos',
+            'propiedad.medidores',
+            'cuotas',
+        ])->get();
+
+        return response()->json(FamiliaResource::collection($familias));
     }
 
     public function store(StoreFamiliaRequest $request): JsonResponse
@@ -26,7 +34,32 @@ class FamiliaController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        return response()->json(new FamiliaResource($this->service->findById($id)));
+        $familia = Familia::with([
+            'propiedad.socio.telefonos',
+            'propiedad.medidores.consumos',
+            'cuotas',
+        ])->findOrFail($id);
+
+        $medidor = $familia->propiedad?->medidores?->first();
+
+        $consumosRecientes = $medidor
+            ? $medidor->consumos
+                ->sortByDesc('fecha_lectura')
+                ->take(6)
+                ->values()
+                ->map(fn($c) => [
+                    'id'             => $c->id,
+                    'fecha_lectura'  => $c->fecha_lectura,
+                    'consumo'        => $c->consumo,
+                    'lectura_actual' => $c->lectura_actual,
+                ])
+            : [];
+
+        $data = (new FamiliaResource($familia))->toArray(request());
+        $data['consumo_ultimo']    = $consumosRecientes[0]['consumo'] ?? null;
+        $data['consumos_recientes'] = $consumosRecientes;
+
+        return response()->json($data);
     }
 
     public function update(UpdateFamiliaRequest $request, int $id): JsonResponse
