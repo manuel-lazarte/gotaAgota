@@ -1,0 +1,14 @@
+.layout-container {
+  display: flex;
+  min-h-screen: 100vh; /* O puedes usar height: 100vh si prefieres que el contenedor principal nunca crezca */
+  width: 100%;
+  background-color: #f8f9fa; /* Un fondo gris sutil para que resalte el contenido blanco */
+}
+
+.layout-content {
+  flex: 1; /* Toma todo el espacio restante a la derecha del Sidebar */
+  padding: 24px; /* Equivalente al p-6 de Tailwind */
+  box-sizing: border-box;
+  overflow-y: auto; /* Si el contenido de la página es muy largo, genera scroll aquí dentro */
+  height: 100vh; /* Mantiene el viewport controlado */
+}
