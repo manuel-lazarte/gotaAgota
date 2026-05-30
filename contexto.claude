@@ -1,0 +1,735 @@
+# GotaAGota - Arquitectura General del Sistema
+
+## 1. Descripción General
+
+GotaAGota es un sistema de gestión comunitaria de agua que permite administrar socios, propiedades, familias, medidores, consumos, pagos y alertas relacionadas con la distribución del recurso hídrico.
+
+La arquitectura está basada en una API REST desarrollada con Laravel (PHP) siguiendo una arquitectura por capas (Controllers, Services, Repositories) para mantener el código organizado, escalable y fácil de mantener.
+
+---
+
+# 2. Arquitectura General
+
+```text
+Cliente (Frontend Web)
+          │
+          ▼
+     API REST
+          │
+          ▼
+    Controllers
+  (app/Http/Controllers)
+          │
+          ▼
+      Services
+  (app/Services)
+ (Lógica de Negocio)
+          │
+          ▼
+    Repositories
+  (app/Repositories)
+          │
+          ▼
+       Models
+    (app/Models)
+          │
+          ▼
+        MySQL
+```
+
+---
+
+# 3. Tecnologías
+
+## Backend
+
+* PHP 8.2+
+* Laravel 11
+* Laravel Sanctum (autenticación API)
+* Eloquent ORM
+* Laravel Validation (Form Requests)
+* Laravel Resources (API Resources)
+* Composer
+
+## Base de Datos
+
+* MySQL
+
+## Arquitectura
+
+* REST API
+* Arquitectura por Capas
+* Repository Pattern
+* Service Layer Pattern
+* API Resources (DTO equivalente)
+* Form Requests (validación)
+
+---
+
+# 4. Estructura del Proyecto
+
+```text
+app/
+│
+├── Http/
+│   ├── Controllers/
+│   │   └── Api/
+│   │       ├── SocioController.php
+│   │       ├── TelefonoSocioController.php
+│   │       ├── PropiedadController.php
+│   │       ├── FamiliaController.php
+│   │       ├── MedidorController.php
+│   │       ├── ConsumoController.php
+│   │       ├── PagoController.php
+│   │       ├── CuotaAguaController.php
+│   │       ├── AlertaController.php
+│   │       └── TanqueComunitarioController.php
+│   │
+│   ├── Requests/
+│   │   ├── Socio/
+│   │   ├── Propiedad/
+│   │   ├── Familia/
+│   │   ├── Medidor/
+│   │   ├── Consumo/
+│   │   ├── Pago/
+│   │   ├── CuotaAgua/
+│   │   ├── Alerta/
+│   │   └── TanqueComunitario/
+│   │
+│   └── Resources/
+│       ├── SocioResource.php
+│       ├── TelefonoSocioResource.php
+│       ├── PropiedadResource.php
+│       ├── FamiliaResource.php
+│       ├── MedidorResource.php
+│       ├── ConsumoResource.php
+│       ├── PagoResource.php
+│       ├── CuotaAguaResource.php
+│       ├── AlertaResource.php
+│       └── TanqueComunitarioResource.php
+│
+├── Services/
+│   ├── SocioService.php
+│   ├── TelefonoSocioService.php
+│   ├── PropiedadService.php
+│   ├── FamiliaService.php
+│   ├── MedidorService.php
+│   ├── ConsumoService.php
+│   ├── PagoService.php
+│   ├── CuotaAguaService.php
+│   ├── AlertaService.php
+│   ├── TanqueComunitarioService.php
+│   │
+│   ├── MotorConsumoService.php
+│   ├── MotorRacionamientoService.php
+│   └── MotorNotificacionesService.php
+│
+├── Repositories/
+│   ├── Contracts/
+│   │   ├── SocioRepositoryInterface.php
+│   │   ├── TelefonoSocioRepositoryInterface.php
+│   │   ├── PropiedadRepositoryInterface.php
+│   │   ├── FamiliaRepositoryInterface.php
+│   │   ├── MedidorRepositoryInterface.php
+│   │   ├── ConsumoRepositoryInterface.php
+│   │   ├── PagoRepositoryInterface.php
+│   │   ├── CuotaAguaRepositoryInterface.php
+│   │   ├── AlertaRepositoryInterface.php
+│   │   └── TanqueComunitarioRepositoryInterface.php
+│   │
+│   ├── SocioRepository.php
+│   ├── TelefonoSocioRepository.php
+│   ├── PropiedadRepository.php
+│   ├── FamiliaRepository.php
+│   ├── MedidorRepository.php
+│   ├── ConsumoRepository.php
+│   ├── PagoRepository.php
+│   ├── CuotaAguaRepository.php
+│   ├── AlertaRepository.php
+│   └── TanqueComunitarioRepository.php
+│
+├── Models/
+│   ├── Socio.php
+│   ├── TelefonoSocio.php
+│   ├── Propiedad.php
+│   ├── Familia.php
+│   ├── Medidor.php
+│   ├── Consumo.php
+│   ├── Pago.php
+│   ├── CuotaAgua.php
+│   ├── Alerta.php
+│   └── TanqueComunitario.php
+│
+├── Exceptions/
+│   └── Handler.php
+│
+└── Providers/
+    └── RepositoryServiceProvider.php
+
+database/
+├── migrations/
+└── seeders/
+
+routes/
+└── api.php
+```
+
+---
+
+# 5. Módulos del Sistema
+
+## Socios
+
+Representa al propietario o responsable principal.
+
+Funciones:
+
+* Registrar socios.
+* Actualizar datos.
+* Consultar socios.
+* Desactivar socios.
+
+Rutas:
+```
+GET    /api/v1/socios
+POST   /api/v1/socios
+GET    /api/v1/socios/{id}
+PUT    /api/v1/socios/{id}
+DELETE /api/v1/socios/{id}
+```
+
+---
+
+## Teléfonos
+
+Permite registrar múltiples teléfonos por socio.
+
+Funciones:
+
+* Registrar teléfono.
+* Marcar teléfono principal.
+* Consultar teléfonos.
+
+Rutas:
+```
+GET    /api/v1/socios/{socioId}/telefonos
+POST   /api/v1/socios/{socioId}/telefonos
+PUT    /api/v1/telefonos/{id}
+DELETE /api/v1/telefonos/{id}
+```
+
+---
+
+## Propiedades
+
+Representa lotes, viviendas o inmuebles.
+
+Funciones:
+
+* Registrar propiedad.
+* Asociar propiedad a un socio.
+* Gestionar estado de la propiedad.
+
+Rutas:
+```
+GET    /api/v1/propiedades
+POST   /api/v1/propiedades
+GET    /api/v1/propiedades/{id}
+PUT    /api/v1/propiedades/{id}
+DELETE /api/v1/propiedades/{id}
+```
+
+---
+
+## Familias
+
+Representa los grupos familiares que habitan una propiedad.
+
+Funciones:
+
+* Registrar familia.
+* Registrar integrantes.
+* Calcular demanda de agua.
+
+Rutas:
+```
+GET    /api/v1/familias
+POST   /api/v1/familias
+GET    /api/v1/familias/{id}
+PUT    /api/v1/familias/{id}
+DELETE /api/v1/familias/{id}
+```
+
+---
+
+## Medidores
+
+Permite controlar el consumo.
+
+Funciones:
+
+* Registrar medidor.
+* Asociar medidor a propiedad.
+* Registrar instalación.
+
+Rutas:
+```
+GET    /api/v1/medidores
+POST   /api/v1/medidores
+GET    /api/v1/medidores/{id}
+PUT    /api/v1/medidores/{id}
+DELETE /api/v1/medidores/{id}
+```
+
+---
+
+## Consumos
+
+Registra lecturas de medidores.
+
+Funciones:
+
+* Registrar lectura.
+* Calcular consumo.
+* Consultar historial.
+
+Rutas:
+```
+GET    /api/v1/consumos
+POST   /api/v1/consumos
+GET    /api/v1/consumos/{id}
+GET    /api/v1/medidores/{medidorId}/consumos
+```
+
+---
+
+## Pagos
+
+Controla los cobros realizados.
+
+Funciones:
+
+* Generar pagos.
+* Consultar pagos pendientes.
+* Actualizar estados de pago.
+
+Rutas:
+```
+GET    /api/v1/pagos
+POST   /api/v1/pagos
+GET    /api/v1/pagos/{id}
+PUT    /api/v1/pagos/{id}
+GET    /api/v1/socios/{socioId}/pagos/pendientes
+```
+
+---
+
+## Cuotas de Agua
+
+Calcula la cantidad de agua asignada.
+
+Funciones:
+
+* Asignar litros por familia.
+* Comparar cuota vs consumo.
+* Detectar excesos.
+
+Rutas:
+```
+GET    /api/v1/cuotas
+POST   /api/v1/cuotas
+GET    /api/v1/cuotas/{id}
+PUT    /api/v1/cuotas/{id}
+```
+
+---
+
+## Alertas
+
+Gestiona mensajes informativos.
+
+Tipos:
+
+* PRECAUCION
+* RESTRICCION
+* RACIONAMIENTO
+
+Rutas:
+```
+GET    /api/v1/alertas
+POST   /api/v1/alertas
+GET    /api/v1/alertas/{id}
+PUT    /api/v1/alertas/{id}
+DELETE /api/v1/alertas/{id}
+```
+
+---
+
+## Tanque Comunitario
+
+Representa la disponibilidad global de agua.
+
+Funciones:
+
+* Registrar agua disponible.
+* Consultar capacidad.
+* Monitorear niveles.
+
+Rutas:
+```
+GET    /api/v1/tanque
+POST   /api/v1/tanque
+GET    /api/v1/tanque/{id}
+PUT    /api/v1/tanque/{id}
+```
+
+---
+
+# 6. Servicios de Negocio
+
+## MotorConsumoService
+
+Responsable de:
+
+* Calcular consumo real.
+* Comparar lecturas.
+* Generar estadísticas.
+
+Fórmula:
+
+Consumo = Lectura Actual - Lectura Anterior
+
+---
+
+## MotorRacionamientoService
+
+Es el núcleo principal del sistema.
+
+Responsable de:
+
+* Calcular demanda total.
+* Consultar disponibilidad.
+* Detectar escasez.
+* Activar restricciones.
+
+Estados:
+
+* NORMAL
+* PRECAUCION
+* RESTRICCION
+* RACIONAMIENTO
+
+---
+
+## MotorNotificacionesService
+
+Responsable de:
+
+* Generar mensajes.
+* Crear alertas.
+* Preparar futuras integraciones con WhatsApp.
+
+---
+
+# 7. Convenciones Laravel
+
+## Controladores
+
+```php
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Socio\StoreSocioRequest;
+use App\Http\Requests\Socio\UpdateSocioRequest;
+use App\Http\Resources\SocioResource;
+use App\Services\SocioService;
+use Illuminate\Http\JsonResponse;
+
+class SocioController extends Controller
+{
+    public function __construct(private SocioService $socioService) {}
+
+    public function index(): JsonResponse
+    {
+        return response()->json(SocioResource::collection($this->socioService->getAll()));
+    }
+
+    public function store(StoreSocioRequest $request): JsonResponse
+    {
+        $socio = $this->socioService->create($request->validated());
+        return response()->json(new SocioResource($socio), 201);
+    }
+
+    public function show(int $id): JsonResponse
+    {
+        return response()->json(new SocioResource($this->socioService->findById($id)));
+    }
+
+    public function update(UpdateSocioRequest $request, int $id): JsonResponse
+    {
+        $socio = $this->socioService->update($id, $request->validated());
+        return response()->json(new SocioResource($socio));
+    }
+
+    public function destroy(int $id): JsonResponse
+    {
+        $this->socioService->delete($id);
+        return response()->json(null, 204);
+    }
+}
+```
+
+## Servicios
+
+```php
+namespace App\Services;
+
+use App\Repositories\Contracts\SocioRepositoryInterface;
+
+class SocioService
+{
+    public function __construct(private SocioRepositoryInterface $repository) {}
+
+    public function getAll(): mixed
+    {
+        return $this->repository->all();
+    }
+
+    public function findById(int $id): mixed
+    {
+        return $this->repository->findById($id);
+    }
+
+    public function create(array $data): mixed
+    {
+        return $this->repository->create($data);
+    }
+
+    public function update(int $id, array $data): mixed
+    {
+        return $this->repository->update($id, $data);
+    }
+
+    public function delete(int $id): void
+    {
+        $this->repository->delete($id);
+    }
+}
+```
+
+## Repositorios
+
+```php
+namespace App\Repositories;
+
+use App\Models\Socio;
+use App\Repositories\Contracts\SocioRepositoryInterface;
+
+class SocioRepository implements SocioRepositoryInterface
+{
+    public function __construct(private Socio $model) {}
+
+    public function all(): mixed
+    {
+        return $this->model->all();
+    }
+
+    public function findById(int $id): mixed
+    {
+        return $this->model->findOrFail($id);
+    }
+
+    public function create(array $data): mixed
+    {
+        return $this->model->create($data);
+    }
+
+    public function update(int $id, array $data): mixed
+    {
+        $socio = $this->findById($id);
+        $socio->update($data);
+        return $socio;
+    }
+
+    public function delete(int $id): void
+    {
+        $this->model->findOrFail($id)->delete();
+    }
+}
+```
+
+## Modelos (Eloquent)
+
+```php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Socio extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['nombre', 'apellido', 'cedula', 'email', 'activo'];
+
+    public function telefonos()
+    {
+        return $this->hasMany(TelefonoSocio::class);
+    }
+
+    public function propiedades()
+    {
+        return $this->hasMany(Propiedad::class);
+    }
+}
+```
+
+## API Resources (DTO)
+
+```php
+namespace App\Http\Resources;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class SocioResource extends JsonResource
+{
+    public function toArray($request): array
+    {
+        return [
+            'id'       => $this->id,
+            'nombre'   => $this->nombre,
+            'apellido' => $this->apellido,
+            'cedula'   => $this->cedula,
+            'email'    => $this->email,
+            'activo'   => $this->activo,
+        ];
+    }
+}
+```
+
+## Rutas (routes/api.php)
+
+```php
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SocioController;
+// ... otros controllers
+
+Route::prefix('v1')->group(function () {
+    Route::apiResource('socios',      SocioController::class);
+    Route::apiResource('propiedades', PropiedadController::class);
+    Route::apiResource('familias',    FamiliaController::class);
+    Route::apiResource('medidores',   MedidorController::class);
+    Route::apiResource('consumos',    ConsumoController::class);
+    Route::apiResource('pagos',       PagoController::class);
+    Route::apiResource('cuotas',      CuotaAguaController::class);
+    Route::apiResource('alertas',     AlertaController::class);
+    Route::apiResource('tanque',      TanqueComunitarioController::class);
+
+    Route::get('socios/{socio}/telefonos', [TelefonoSocioController::class, 'index']);
+    Route::post('socios/{socio}/telefonos', [TelefonoSocioController::class, 'store']);
+    Route::get('socios/{socio}/pagos/pendientes', [PagoController::class, 'pendientes']);
+    Route::get('medidores/{medidor}/consumos', [ConsumoController::class, 'porMedidor']);
+});
+```
+
+---
+
+# 8. Versionado de API
+
+Todas las rutas usarán el prefijo:
+
+```text
+/api/v1
+```
+
+Ejemplos:
+
+```text
+/api/v1/socios
+/api/v1/propiedades
+/api/v1/familias
+/api/v1/medidores
+/api/v1/consumos
+/api/v1/pagos
+/api/v1/cuotas
+/api/v1/alertas
+/api/v1/tanque
+```
+
+---
+
+# 9. Flujo Principal del Negocio
+
+```text
+Socio
+   │
+   ▼
+Propiedad
+   │
+   ▼
+Familia
+   │
+   ▼
+Cuota de Agua
+   │
+   ▼
+Medidor
+   │
+   ▼
+Consumo
+   │
+   ▼
+Motor de Racionamiento
+   │
+   ▼
+Alertas
+```
+
+---
+
+# 10. MVP Inicial
+
+## CRUDs
+
+* Socios
+* Propiedades
+* Familias
+* Medidores
+
+## Procesos
+
+* Registro de consumo
+* Cálculo de cuota
+* Gestión de tanque
+* Generación de alertas
+
+## Frontend
+
+* Dashboard
+* Gestión de socios
+* Gestión de familias
+* Gestión de consumos
+* Gestión de alertas
+* Simulación visual de WhatsApp
+
+---
+
+# 11. Futuras Versiones
+
+## Versión 2
+
+* WhatsApp Business
+* Reportes PDF
+* Estadísticas
+
+## Versión 3
+
+* Sensores IoT
+* Lecturas automáticas
+* Aplicación móvil
+
+## Versión 4
+
+* Automatización de válvulas
+* Monitoreo en tiempo real
+* Predicción de escasez mediante IA
